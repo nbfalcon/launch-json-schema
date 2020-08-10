@@ -1,11 +1,11 @@
 #!/bin/sh
-if [ "$ENABLE_ROOT_OBJECT" ]; then
-    ENABLE_ROOT_OBJECT=true
+if [ -n "$ENABLE_ROOT_OBJECT" ]; then
     echo "[INFO] Enabled root object schema"
+    jq -Mf ./package-json2schema.jq "$@" \
+        | jq -sMf ./json-schemas2schema-with-root-object.jq \
+             > ./build/launch.json.jsonschema
 else
-    ENABLE_ROOT_OBJECT=false
+    jq -Mf ./package-json2schema.jq "$@" \
+        | jq -sMf ./json-schemas2schema.jq \
+             > ./build/launch.json.jsonschema
 fi
-
-jq -Mf ./package-json2schema.jq "$@" \
-    | jq -sMf --arg ENABLE_ROOT_OBJECT false ./json-schemas2schema.jq \
-         > ./build/launch.json.jsonschema
